@@ -1,0 +1,59 @@
+<ion-header class="profile-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="!editMode" (click)="toggleEdit()">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="editMode" (click)="saveProfile()">
+        <ion-icon name="checkmark-outline"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="editMode" color="medium" (click)="toggleEdit()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="profile-content">
+  <div class="profile-top-curve"></div>
+
+  <div class="profile-avatar-wrapper">
+    <img [src]="userData?.avatarUrl" alt="Avatar" class="profile-avatar">
+  </div>
+
+  <div class="profile-info">
+    <h2 *ngIf="!editMode">{{ userData?.name }}</h2>
+    <ion-item *ngIf="editMode">
+      <ion-label position="stacked">Nombre</ion-label>
+      <ion-input [(ngModel)]="editName"></ion-input>
+    </ion-item>
+
+    <p class="member-since" *ngIf="!editMode">
+      Miembro desde {{ memberSince | date:'MMMM yyyy' }}
+    </p>
+
+    <ion-item *ngIf="!editMode">
+      <ion-label position="fixed">E-mail</ion-label>
+      <p>{{ userData?.email }}</p>
+    </ion-item>
+    <ion-item *ngIf="editMode">
+      <ion-label position="stacked">E-mail</ion-label>
+      <ion-input type="email" [(ngModel)]="editEmail"></ion-input>
+    </ion-item>
+
+    <!-- Ocultamos el campo contraseña en edición por simplicidad -->
+    <ion-item *ngIf="!editMode">
+      <ion-label position="fixed">Contraseña</ion-label>
+      <p>********</p>
+    </ion-item>
+  </div>
+
+  <ion-button fill="clear" class="logout-btn" (click)="logout()">
+    Salir de mi cuenta
+  </ion-button>
+</ion-content>

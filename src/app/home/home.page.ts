@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {IonContent, IonHeader, IonList, IonItem, IonCard, IonCardContent, IonFab, IonFabButton, IonIcon, IonRouterLink, IonFabList } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonList, IonItem, IonCard, IonCardContent, IonFab, IonFabButton, IonIcon, IonRouterLink, IonFabList } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { NotasService, Note } from '../services/notas.service';
+import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -14,17 +16,34 @@ export class HomePage implements OnInit {
   currentDate = new Date();
   selectedDate: Date = new Date();
   daysOfWeek: { date: number; weekday: string; fullDate: Date }[] = [];
-  userId = 1;
+  userId!: number;
   loading = false;
   error = '';
 
-  constructor(private notasService: NotasService){};
+  constructor(private notasService: NotasService, private authService: AuthService, private router: Router) { };
 
   ngOnInit(): void {
-    this.loadNotes();
+    this.authService.userData$.subscribe(userData => {
+      if (userData) {
+        this.userId = userData.id;
+        this.loadNotes();
+      } else {
+        console.log(this.userId)
+        console.log(userData)
+        console.warn('No hay usuario logueado');
+        this.error = 'Debes iniciar sesión para ver las notas.';
+      }
+    });
     this.generateCurrentWeek();
   }
   loadNotes(): void {
+    if (this.userId == null) { // null o undefined
+      console.error('userId no está definido en loadNotes');
+      this.loading = false;
+      this.error = 'No se encontró el usuario para cargar las notas.';
+      return;
+    }
+
     this.loading = true;
     this.notasService.obtenerNotas(this.userId).subscribe({
       next: (response) => {
@@ -39,6 +58,11 @@ export class HomePage implements OnInit {
       }
     });
   }
+
+  goToProfile(): void {
+    this.router.navigate(['/profile']); // 🚀 Navegar a la página de perfil
+  }
+
   generateCurrentWeek(): void {
     const today = new Date();
     const firstDayOfWeek = new Date(today);

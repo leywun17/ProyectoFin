@@ -28,6 +28,9 @@ export class NotasService {
    * Get all notes for a user
    */
   obtenerNotas(usuarioId: number): Observable<ApiResponse> {
+    if (!usuarioId) {
+      console.error('idUsuario es undefined en obtenerNotas');
+    }    
     const params = new HttpParams().set('usuario_id', usuarioId.toString());
     return this.http.get<ApiResponse>(this.apiUrl, { params });
   }
